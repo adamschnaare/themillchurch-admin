@@ -20,21 +20,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../bower_components/iron-pages/iron-pages.html">
 <link rel="import" href="../bower_components/iron-selector/iron-selector.html">
 <link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
-<link rel="import" href="../bower_components/modo-styles/modo-styles-shared.html">
 <link rel="import" href="../bower_components/modo-login/modo-login.html">
-<link rel="import" href="../bower_components/iron-ajax/iron-ajax.html">
 <link rel="import" href="x-user-dropdown.html">
 <link rel="import" href="x-icons.html">
 <link rel="import" href="shared-styles.html">
 
 <dom-module id="x-app">
   <template>
-    <style is="custom-style" include="modo-styles-shared shared-styles">
-      :host {
-        --primary-color: var(--modo-blue-500);
-        --secondary-color: black;
-        display: block;
-      }
+    <style is="custom-style" include="shared-styles">
       app-header {
         color: #fff;
         background-color: var(--primary-color);
@@ -99,7 +92,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             <paper-icon-button icon="menu" drawer-toggle></paper-icon-button>
             <div main-title>{{_title}}</div>
             <x-user-dropdown
-              profile="{{_profile}}"
+              profile="[[_profile]]"
               on-logout="_logout"
               on-navigate="_navigate"></x-user-dropdown>
           </app-toolbar>
@@ -107,17 +100,17 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         <iron-pages selected="[[page]]" attr-for-selected="name" fallback-selection="view404" role="main">
           <x-list name="list"></x-list>
           <x-detail name="detail"></x-detail>
-          <x-settings name="settings"></x-settings>
+          <x-settings name="settings" profile="[[_profile]]"></x-settings>
           <x-view404 name="view404"></x-view404>
         </iron-pages>
       </app-header-layout>
     </app-drawer-layout>
-    <modo-login id="login"
+    <!-- <modo-login id="login"
       auto
       client-id="cF9feG7LynWDT7bnCseVc1mfRbtm9Zqs",
       domain="modo.auth0.com"
       id-token="{{_token}}"
-      profile="{{_profile}}"></modo-login>
+      profile="{{_profile}}"></modo-login> -->
   </template>
 
   <script>
@@ -168,7 +161,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         this.page = 'view404';
       },
       _logout: function(){
-        // console.log('logout');
         this.set('route.path','/logout');
       },
       _navigate: function(e,detail){

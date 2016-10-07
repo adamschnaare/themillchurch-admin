@@ -1,6 +1,6 @@
-# Polymer App Toolbox - Starter Kit
+# Modo App Scaffold
 
-[![Build Status](https://travis-ci.org/PolymerElements/polymer-starter-kit.svg?branch=master)](https://travis-ci.org/PolymerElements/polymer-starter-kit)
+> Polymer Starter Kit loaded with Modo elements and flavors
 
 This template is a starting point for building apps using a drawer-based
 layout. The layout is provided by `app-layout` elements.
@@ -18,10 +18,6 @@ The PRPL pattern, in a nutshell:
 * **Pre-cache** components for remaining routes
 * **Lazy-load** and progressively upgrade next routes on-demand
 
-### Migrating from Polymer Starter Kit v1?
-
-[Check out our blog post that covers what's changed in PSK2 and how to migrate!](https://www.polymer-project.org/1.0/blog/2016-08-18-polymer-starter-kit-or-polymer-cli.html)
-
 ### Setup
 
 ##### Prerequisites
@@ -29,12 +25,6 @@ The PRPL pattern, in a nutshell:
 Install [polymer-cli](https://github.com/Polymer/polymer-cli):
 
     npm install -g polymer-cli
-
-##### Initialize project from template
-
-    mkdir x-app
-    cd x-app
-    polymer init starter-kit
 
 ### Start the development server
 

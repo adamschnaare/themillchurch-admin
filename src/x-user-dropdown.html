@@ -6,12 +6,11 @@
 <link rel="import" href="../bower_components/paper-item/paper-item.html">
 <link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
 <link rel="import" href="../bower_components/modo-icons/modo-icons.html">
-<link rel="import" href="../bower_components/modo-styles/modo-styles-shared.html">
-
+<link rel="import" href="shared-styles.html">
 
 <dom-module id="x-user-dropdown">
   <template>
-    <style is="custom-style" include="modo-styles-shared">
+    <style is="custom-style" include="shared-styles">
       :host {
         display: block;
         --paper-menu-button-content:{
@@ -57,9 +56,7 @@
             alt$="{{profile.given_name}}'s Profile Image"
             src$="[[profile.picture]]"></iron-image>
         </template>
-        <template is="dom-if" if="{{!profile.picture}}" restamp="true">
-          <iron-icon id="profileIcon" icon="person-outline"></iron-icon>
-        </template>
+        <iron-icon hidden$="[[_showImage]]" id="profileIcon" icon="person-outline"></iron-icon>
       </paper-button>
       <paper-menu class="dropdown-content">
         <iron-selector id="more" on-iron-select="_deselect">
@@ -73,7 +70,17 @@
     Polymer({
       is: 'x-user-dropdown',
       properties:{
-        profile: Object
+        profile: {
+          type: Object,
+          observer: '_profileUpdated'
+        },
+        _showImage: {
+          type: Boolean,
+          value: false
+        },
+      },
+      _profileUpdated: function(){
+        this._showImage = (this.profile !== undefined && this.profile.picture);
       },
       _logout: function(){
         this.fire('logout');

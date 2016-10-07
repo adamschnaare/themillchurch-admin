@@ -9,6 +9,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 -->
 
 <link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/modo-profile-card/modo-profile-card.html">
+
 <link rel="import" href="shared-styles.html">
 
 <dom-module id="x-settings">
@@ -16,22 +18,21 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     <style include="shared-styles">
       :host {
         display: block;
-
         padding: 10px;
       }
     </style>
-
-    <div class="card">
-      <div class="circle">3</div>
-      <h1>View Three</h1>
-      <p>Modus commodo minimum eum te, vero utinam assueverit per eu.</p>
-      <p>Ea duis bonorum nec, falli paulo aliquid ei eum.Has at minim mucius aliquam, est id tempor laoreet.Pro saepe pertinax ei, ad pri animal labores suscipiantur.</p>
-    </div>
+    <modo-profile-card profile="{{profile}}"></modo-profile-card>
   </template>
 
   <script>
     Polymer({
-      is: 'x-settings'
+      is: 'x-settings',
+      properties:{
+        // User Profile info
+        profile: {
+          type: Object
+        },
+      }
     });
   </script>
 </dom-module>

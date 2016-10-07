@@ -9,29 +9,113 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 -->
 
 <link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/iron-ajax/iron-ajax.html">
+<link rel="import" href="../bower_components/modo-list/modo-list.html">
+<!-- <link rel="import" href="../bower_components/modo-list/modo-list-detail.html"> -->
+<link rel="import" href="../bower_components/paper-material/paper-material.html">
+<link rel="import" href="../bower_components/paper-toast/paper-toast.html">
+
 <link rel="import" href="shared-styles.html">
 
 <dom-module id="x-list">
   <template>
-    <style include="shared-styles">
+    <style is="custom-style" include="shared-styles">
       :host {
         display: block;
-
-        padding: 10px;
       }
     </style>
+    <!-- Get Data -->
+    <!-- Example Appserver Endpoint Push -->
+    <!-- <iron-ajax
+      id="scan"
+      url="[[apiUrl]]/endpoint/scan"
+      handle-as="json"
+      content-type="application/json"
+      method="POST"
+      last-response="{{scanData}}"
+      loading="{{loading}}"></iron-ajax> -->
+    <iron-ajax
+      auto
+      url="data/list-data.json"
+      handle-as="json"
+      loading="{{loading}}"
+      last-response="{{scanData}}"></iron-ajax>
+    <iron-ajax
+      auto
+      url="data/list-config.json"
+      handle-as="json"
+      last-response="{{config}}"></iron-ajax>
 
-    <div class="card">
-      <div class="circle">1</div>
-      <h1>View One</h1>
-      <p>Ut labores minimum atomorum pro. Laudem tibique ut has.
-      <p>Lorem ipsum dolor sit amet, per in nusquam nominavi periculis, sit elit oportere ea.Lorem ipsum dolor sit amet, per in nusquam nominavi periculis, sit elit oportere ea.Cu mei vide viris gloriatur, at populo eripuit sit.</p>
-    </div>
+    <!-- Display Data -->
+    <modo-list
+      data="[[items]]"
+      config="[[config]]"
+      detail-element="modo-list-detail"
+      external-data="[[externalData]]"
+      loading="[[loading]]"
+      on-edit-success="_changeSuccess"
+      on-edit-error="_changeError"
+      on-delete-success="_changeSuccess"
+      on-delete-error="_changeError"
+      no-export></modo-list>
+    <paper-toast id="toast"></paper-toast>
   </template>
 
   <script>
     Polymer({
-      is: 'x-list'
+      is: 'x-list',
+      properties:{
+        // Response from scan ajax call
+        scanData: {
+          type: Object
+        },
+        // List of data items
+        items: {
+          type: Array
+        },
+        // Auth0 token
+        token: {
+          type: String
+        },
+        // Base API Url
+        apiUrl: {
+          type: String
+        },
+        // Externa; data to be passed to the detail element
+        externalData: {
+          type: Object,
+          value: {}
+        }
+      },
+      observers:[
+        '_getData(token)',
+        '_processScanData(scanData)',
+        '_processExternalData(externalData,token,apiUrl)'
+      ],
+      _getData: function(){
+        // Set Auth header
+        this.$.scan.headers = { "Authorization": "Token " + this.token };
+        this.$.scan.generateRequest();
+      },
+      _processScanData: function(){
+        this.items = this.scanData;
+        // For use with Appserver Endpoints
+        // this.items = this.scanData.response_data.coins;
+        // this._itemsCache = this.scanData.response_data.coins;
+      },
+      _processExternalData: function(){
+        this.externalData.apiUrl = this.apiUrl;
+        this.externalData.token = this.token;
+      },
+      _changeSuccess: function(e,detail){
+        this._getData();
+        this.$.toast.text = detail.msg;
+        this.$.toast.open();
+      },
+      _changeError: function(e,detail){
+        this.$.toast.text = detail.msg;
+        this.$.toast.open();
+      },
     });
   </script>
 </dom-module>
