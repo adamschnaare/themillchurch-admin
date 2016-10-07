@@ -1,0 +1,89 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/paper-menu-button/paper-menu-button.html">
+<link rel="import" href="../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../bower_components/iron-image/iron-image.html">
+<link rel="import" href="../bower_components/iron-selector/iron-selector.html">
+<link rel="import" href="../bower_components/paper-item/paper-item.html">
+<link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../bower_components/modo-icons/modo-icons.html">
+<link rel="import" href="../bower_components/modo-styles/modo-styles-shared.html">
+
+
+<dom-module id="x-user-dropdown">
+  <template>
+    <style is="custom-style" include="modo-styles-shared">
+      :host {
+        display: block;
+        --paper-menu-button-content:{
+          color: var(--primary-text-color);
+        };
+      }
+      paper-button{
+        font-size: 16px;
+      }
+      paper-menu-button{
+          padding: 0;
+      }
+      paper-menu-button paper-button{
+        min-width: inherit;
+      }
+      /*.dropdown-content paper-item{
+        color: #000;
+        cursor: pointer;
+      }*/
+
+      #profileImage {
+        width: 34px;
+        height: 34px;
+        border-radius: 17px;
+        background: rgba(0,0,0,0.125);
+      }
+      #profileIcon {
+        width: 34px;
+        height: 34px;
+        border-radius: 17px;
+        margin-left: 10px;
+        padding: 6px;
+        box-sizing: border-box;
+        background: rgba(0,0,0,0.125);
+      }
+    </style>
+    <paper-menu-button horizontal-align="right" vertical-offset="44" horizontal-offset="10">
+      <paper-button class="dropdown-trigger">
+        <!-- {{profile.given_name}} -->
+        <template is="dom-if" if="{{profile.picture}}" restamp="true">
+          <iron-image sizing="cover"
+            id="profileImage"
+            alt$="{{profile.given_name}}'s Profile Image"
+            src$="[[profile.picture]]"></iron-image>
+        </template>
+        <template is="dom-if" if="{{!profile.picture}}" restamp="true">
+          <iron-icon id="profileIcon" icon="person-outline"></iron-icon>
+        </template>
+      </paper-button>
+      <paper-menu class="dropdown-content">
+        <iron-selector id="more" on-iron-select="_deselect">
+          <paper-item on-tap="_navToProfile">Settings</paper-item>
+          <paper-item on-tap="_logout">Logout</paper-item>
+        </iron-selector>
+      </paper-menu>
+    </paper-menu-button>
+  </template>
+  <script>
+    Polymer({
+      is: 'x-user-dropdown',
+      properties:{
+        profile: Object
+      },
+      _logout: function(){
+        this.fire('logout');
+      },
+      _navToProfile: function(){
+        this.fire('navigate','settings');
+      },
+      _deselect: function(){
+        this.$.more.select();
+      },
+    });
+  </script>
+</dom-module>

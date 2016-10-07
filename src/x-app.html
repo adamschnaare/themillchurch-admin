@@ -1,0 +1,180 @@
+<!--
+@license
+Copyright (c) 2016 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/app-layout/app-drawer/app-drawer.html">
+<link rel="import" href="../bower_components/app-layout/app-drawer-layout/app-drawer-layout.html">
+<link rel="import" href="../bower_components/app-layout/app-header/app-header.html">
+<link rel="import" href="../bower_components/app-layout/app-header-layout/app-header-layout.html">
+<link rel="import" href="../bower_components/app-layout/app-scroll-effects/app-scroll-effects.html">
+<link rel="import" href="../bower_components/app-layout/app-toolbar/app-toolbar.html">
+<link rel="import" href="../bower_components/app-route/app-location.html">
+<link rel="import" href="../bower_components/app-route/app-route.html">
+<link rel="import" href="../bower_components/iron-pages/iron-pages.html">
+<link rel="import" href="../bower_components/iron-selector/iron-selector.html">
+<link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../bower_components/modo-styles/modo-styles-shared.html">
+<link rel="import" href="../bower_components/modo-login/modo-login.html">
+<link rel="import" href="../bower_components/iron-ajax/iron-ajax.html">
+<link rel="import" href="x-user-dropdown.html">
+<link rel="import" href="x-icons.html">
+<link rel="import" href="shared-styles.html">
+
+<dom-module id="x-app">
+  <template>
+    <style is="custom-style" include="modo-styles-shared shared-styles">
+      :host {
+        --primary-color: var(--modo-blue-500);
+        --secondary-color: black;
+        display: block;
+      }
+      app-header {
+        color: #fff;
+        background-color: var(--primary-color);
+      }
+      app-header paper-icon-button {
+        --paper-icon-button-ink-color: white;
+      }
+      .drawer-list {
+        margin: 0 20px;
+      }
+      .drawer-list a {
+        display: block;
+        padding: 0 16px;
+        text-decoration: none;
+        color: var(--secondary-color);
+        line-height: 40px;
+      }
+      .drawer-list a.iron-selected {
+        color: black;
+        font-weight: bold;
+      }
+      div[title]{
+        @apply(--layout-flex);
+      }
+      app-toolbar vaadin-combo-box,
+      app-toolbar paper-input{
+        /*margin-top: -15px;*/
+        --paper-input-container-color: rgba(255,255,255,0.5);
+        --paper-input-container-focus-color: #fff;
+        --paper-input-container-input-color: #fff;
+        --paper-input-container-label-focus:{
+          color: #fff;
+        }
+      }
+      modo-login{
+        --modo-shade-background-color: var(--primary-color);
+      }
+    </style>
+
+    <app-location route="{{route}}" use-hash-as-path></app-location>
+    <app-route
+        route="{{route}}"
+        pattern="/:page"
+        data="{{routeData}}"
+        tail="{{subroute}}"></app-route>
+    <app-drawer-layout fullbleed force-narrow>
+      <!-- Drawer content -->
+      <app-drawer id="drawer">
+        <app-toolbar>Modo Payments</app-toolbar>
+        <iron-selector selected="[[page]]" attr-for-selected="name" class="drawer-list" role="navigation">
+          <a name="list" href="/#/list">List</a>
+          <a name="detail" href="/#/detail">Detail</a>
+          <a name="settings" href="/#/settings">Settings</a>
+          <a name="logout" href="/#/logout">Logout</a>
+        </iron-selector>
+      </app-drawer>
+
+      <!-- Main content -->
+      <app-header-layout has-scrolling-region>
+        <app-header condenses reveals effects="waterfall">
+          <app-toolbar>
+            <paper-icon-button icon="menu" drawer-toggle></paper-icon-button>
+            <div main-title>{{_title}}</div>
+            <x-user-dropdown
+              profile="{{_profile}}"
+              on-logout="_logout"
+              on-navigate="_navigate"></x-user-dropdown>
+          </app-toolbar>
+        </app-header>
+        <iron-pages selected="[[page]]" attr-for-selected="name" fallback-selection="view404" role="main">
+          <x-list name="list"></x-list>
+          <x-detail name="detail"></x-detail>
+          <x-settings name="settings"></x-settings>
+          <x-view404 name="view404"></x-view404>
+        </iron-pages>
+      </app-header-layout>
+    </app-drawer-layout>
+    <modo-login id="login"
+      auto
+      client-id="cF9feG7LynWDT7bnCseVc1mfRbtm9Zqs",
+      domain="modo.auth0.com"
+      id-token="{{_token}}"
+      profile="{{_profile}}"></modo-login>
+  </template>
+
+  <script>
+    Polymer({
+      is: 'x-app',
+      properties: {
+        page: {
+          type: String,
+          reflectToAttribute: true,
+          observer: '_pageChanged'
+        },
+        _title: {
+          type: String,
+          value: 'Modo Payments'
+        },
+      },
+      observers: [
+        '_routePageChanged(routeData.page)'
+      ],
+      _routePageChanged: function(page) {
+        this.page = page || 'list';
+        switch(this.page){
+          case 'list':
+            this._title = 'List';
+            break;
+          case 'detail':
+            this._title = 'Detail';
+            break;
+          case 'settings':
+            this._title = 'Settings';
+            break;
+          case 'logout':
+            this._title = 'Logout';
+            this.$.login.logout();
+            break;
+          default:
+            this._title = 'Modo Payments';
+            break;
+        }
+      },
+      _pageChanged: function(page) {
+        // Load page import on demand. Show 404 page if fails
+        var resolvedPageUrl = this.resolveUrl('x-' + page + '.html');
+        this.importHref(resolvedPageUrl, null, this._showPage404, true);
+        this.$.drawer.close();
+      },
+      _showPage404: function() {
+        this.page = 'view404';
+      },
+      _logout: function(){
+        // console.log('logout');
+        this.set('route.path','/logout');
+      },
+      _navigate: function(e,detail){
+        this.set('route.path','/' + detail)
+      },
+    });
+  </script>
+
+</dom-module>
