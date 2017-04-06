@@ -1,0 +1,235 @@
+<!--
+@license
+Copyright (c) 2016 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+
+<!doctype html>
+<html lang="">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes">
+
+    <title>The Mill Admin App</title>
+    <meta name="description" content="Modo Payments">
+
+    <link rel="icon" href="/images/manifest/icon-72x72.png">
+
+    <!-- See https://goo.gl/OOhYW5 -->
+    <link rel="manifest" href="/manifest.json">
+
+    <!-- See https://goo.gl/qRE0vM -->
+    <meta name="theme-color" content="#2E3AA1">
+
+    <!-- Add to homescreen for Chrome on Android. Fallback for manifest.json -->
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="application-name" content="The Mill Church">
+
+    <!-- Add to homescreen for Safari on iOS -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="The Mill Church">
+
+    <!-- Homescreen icons -->
+    <link rel="apple-touch-icon" sizes="72x72" href="/images/manifest/icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="96x96" href="/images/manifest/icon-96x96.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="/images/manifest/icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="192x192" href="/images/manifest/icon-192x192.png">
+
+    <!-- Tile icon for Windows 8 (144x144 + tile color) -->
+    <meta name="msapplication-TileImage" content="/images/manifest/icon-144x144.png">
+    <meta name="msapplication-TileColor" content="#0097db">
+    <meta name="msapplication-tap-highlight" content="no">
+
+
+
+    <!-- build:css styles/main.css -->
+    <!-- <link rel="stylesheet" href="styles/main.css"> -->
+    <!-- endbuild-->
+
+    <script>
+      // Setup Polymer options
+      window.Polymer = {
+        dom: 'shadow',
+        lazyRegister: true
+      };
+
+      // Load webcomponentsjs polyfill if browser does not support native Web Components
+      (function() {
+        'use strict';
+
+        var onload = function() {
+          // For native Imports, manually fire WebComponentsReady so user code
+          // can use the same code path for native and polyfill'd imports.
+          if (!window.HTMLImports) {
+            document.dispatchEvent(
+              new CustomEvent('WebComponentsReady', {bubbles: true})
+            );
+          }
+        };
+
+        var webComponentsSupported = (
+          'registerElement' in document
+          && 'import' in document.createElement('link')
+          && 'content' in document.createElement('template')
+        );
+
+        if (!webComponentsSupported) {
+          var script = document.createElement('script');
+          script.async = true;
+          script.src = '/bower_components/webcomponentsjs/webcomponents-lite.min.js';
+          script.onload = onload;
+          document.head.appendChild(script);
+        } else {
+          onload();
+        }
+      })();
+
+      // Load pre-caching Service Worker
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function() {
+          navigator.serviceWorker.register('/service-worker.js');
+        });
+      }
+    </script>
+
+    <link rel="import" href="/src/x-app.html">
+    <link rel="import" href="elements/elements.html">
+    <link rel="import" href="bower_components/ship-squarespace-slides/ship-squarespace-slides.html">
+
+    <!-- For shared styles, shared-styles.html import in elements.html -->
+    <style is="custom-style" include="shared-styles"></style>
+    <style>
+      body {
+        margin: 0;
+        font-family: 'Roboto', 'Noto', sans-serif;
+        line-height: 1.5;
+        min-height: 100vh;
+        background-color: #eeeeee;
+      }
+      #logo-header {
+        width: 100px;
+        margin-right: 30px;
+      }
+      [hidden]{
+        display: none;
+      }
+      [hideall] #drawer{
+        width: 0 !important;
+      }
+      [hideall] #main{
+        left: 0 !important;
+      }
+    </style>
+
+  </head>
+
+  <body unresolved class="fullbleed layout vertical">
+    <span id="browser-sync-binding"></span>
+    <template is="dom-bind" id="app">
+
+      <paper-drawer-panel id="paperDrawerPanel" hideall$="[[hideall]]">
+        <!-- Drawer Scroll Header Panel -->
+        <paper-scroll-header-panel drawer fixed hidden$='[[hideall]]'>
+
+          <!-- Drawer Toolbar -->
+          <paper-toolbar id="drawerToolbar">
+            <span class="paper-font-title">Menu</span>
+          </paper-toolbar>
+
+          <!-- Drawer Content -->
+          <paper-menu class="list" attr-for-selected="data-route" selected="[[route]]">
+            <a data-route="announcements" href="/" on-click="onDataRouteClick">
+              <iron-icon icon="communication:email"></iron-icon>
+              <span>Announcements</span>
+            </a>
+            <a data-route="stratfordEvents" href="/edgarevents" on-click="onDataRouteClick">
+              <iron-icon icon="image:slideshow"></iron-icon>
+              <span>Edgar Events</span>
+            </a>
+            <a data-route="edgarEvents" href="/stratfordevents" on-click="onDataRouteClick">
+              <iron-icon icon="image:slideshow"></iron-icon>
+              <span>Stratford Events</span>
+            </a>
+          </paper-menu>
+        </paper-scroll-header-panel>
+
+        <!-- Main Area -->
+        <paper-scroll-header-panel main condenses keep-condensed-header>
+
+          <!-- Main Toolbar -->
+          <paper-toolbar id="mainToolbar" class="tall" hidden$='[[hideall]]'>
+            <paper-icon-button id="paperToggle" icon="menu" paper-drawer-toggle></paper-icon-button>
+            <span class="flex"></span>
+
+            <!-- Toolbar icons -->
+            <!--<paper-icon-button icon="refresh"></paper-icon-button>-->
+            <!--<paper-icon-button icon="search"></paper-icon-button>-->
+
+            <!-- Application name -->
+            <div class="middle middle-container center horizontal layout flex">
+              <img id="logo-header" src="images/TMC15_Logo02_FULL_WHITE.png">
+              <div class="app-name flex">The Mill Admin</div>
+              <app-nav route="{{headerRoute}}"></app-nav>
+            </div>
+
+            <!-- Application sub title -->
+            <div class="bottom bottom-container center horizontal layout">
+              <div class="bottom-title paper-font-subhead">Turn-key solutions to awesomeness</div>
+            </div>
+
+          </paper-toolbar>
+
+          <!-- Main Content -->
+          <div class="content">
+            <iron-pages attr-for-selected="data-route" selected="{{route}}">
+
+              <section data-route="announcements">
+                <mill-data events="{{events}}" prayers="{{prayers}}" announcements="{{announcements}}"></mill-data>
+                <mill-view-announcements
+                  events="{{events.upcoming}}"
+                  prayers="{{prayers.items}}"
+                  announcements="{{announcements.items}}"
+                  route="{{headerRoute}}"></mill-view-announcements>
+              </section>
+              <section data-route="edgarEvents">
+                <ship-squarespace-slides categories="All Church,Edgar"></ship-squarespace-slides>
+              </section>
+              <section data-route="stratfordEvents">
+                <ship-squarespace-slides categories="All Church,Stratford"></ship-squarespace-slides>
+              </section>
+
+            </iron-pages>
+          </div>
+        </paper-scroll-header-panel>
+      </paper-drawer-panel>
+
+      <!-- Uncomment next block to enable Service Worker support (1/2) -->
+      <!--
+    <paper-toast id="caching-complete"
+                 duration="6000"
+                 text="Caching complete! This app will work offline.">
+    </paper-toast>
+
+    <platinum-sw-register auto-register
+                          clients-claim
+                          skip-waiting
+                          on-service-worker-installed="displayInstalledToast">
+      <platinum-sw-cache default-cache-strategy="fastest"
+                         cache-config-file="cache-config.json">
+      </platinum-sw-cache>
+    </platinum-sw-register>
+    -->
+
+    </template>
+
+    <!-- build:js scripts/app.js -->
+    <script src="scripts/app.js"></script>
+    <!-- endbuild-->
+  </body>
+
+</html>

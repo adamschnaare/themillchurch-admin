@@ -1,0 +1,29 @@
+<dom-module id="mill-item-prayer">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+    </style>
+    <p style="padding: 14px;background: #fff;border: 1px solid #eee;border-bottom: 2px solid #ddd;">
+      <a href="http://themill.church{{prayer.fullUrl}}" target="_blank">{{prayer.title}}</a>
+    </p>
+  </template>
+  <script>
+    Polymer({
+      is: 'mill-item-prayer',
+      properties: {
+        prayer: {
+          type: Object,
+        }
+      },
+      _computeExcerpt: function(html) {
+        var div = document.createElement('div');
+        div.innerHTML = html;
+        var text = div.textContent || div.innerText || '';
+        return text;
+      }
+    });
+  </script>
+
+</dom-module>

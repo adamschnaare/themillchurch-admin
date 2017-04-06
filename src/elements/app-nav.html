@@ -1,0 +1,46 @@
+<dom-module id="app-nav">
+  <template>
+    <style>
+      .top-menu li{
+        display: inline-block;
+      }
+
+      .top-menu li{
+        background: ;
+        padding: 10px 20px;
+        text-align: center;
+        cursor: pointer;
+      }
+      .top-menu li:hover{
+        background: #388e3c;
+      }
+      .top-menu li[selected]{
+        background: #43a047;
+      }
+    </style>
+    <ul class="top-menu layout horizontal">
+      <li on-tap="_routeChange" route="select">Select</li>
+      <li on-tap="_routeChange" route="preview">Preview</li>
+      <li on-tap="_routeChange" route="export">Export</li>
+    </ul>
+  </template>
+  <script>
+    Polymer({
+      is: 'app-nav',
+      properties:{
+        route: {
+          type: String,
+          notify: true
+        }
+      },
+      _routeChange: function(e){
+        this.route = e.target.attributes.route.value;
+        var items = this.getElementsByTagName('li');
+        for (var i = 0; i < items.length; i++) {
+          items[i].removeAttribute('selected');
+        }
+        e.target.setAttribute('selected',true);
+      }
+    });
+  </script>
+</dom-module>

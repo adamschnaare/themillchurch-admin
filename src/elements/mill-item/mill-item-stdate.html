@@ -1,0 +1,38 @@
+<dom-module id="mill-item-stdate">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+    </style>
+    <p style="padding: 14px;background: #fff;border: 1px solid #eee;border-bottom: 2px solid #ddd;">
+      {{_computeDateMonth(event.startDate)}} {{_computeDateDay(event.startDate)}}: <a href="http://themill.church{{event.fullUrl}}" target="_blank">{{event.title}}</a>
+    </p>
+  </template>
+  <script>
+    Polymer({
+      is: 'mill-item-stdate',
+      properties: {
+        event: {
+          type: Object,
+        }
+      },
+      _computeDateMonth: function(item) {
+        var date = new Date(item);
+        var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+        return months[date.getMonth()];
+      },
+      _computeDateDay: function(item) {
+        var date = new Date(item);
+        return ('0' + date.getDate()).slice(-2);
+      },
+      _computeExcerpt: function(html) {
+        var div = document.createElement('div');
+        div.innerHTML = html;
+        var text = div.textContent || div.innerText || '';
+        return text;
+      }
+    });
+  </script>
+
+</dom-module>

@@ -1,0 +1,285 @@
+<!--
+@license
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+
+<link rel="import" href="../../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../../bower_components/paper-card/paper-card.html">
+<link rel="import" href="../../../bower_components/paper-checkbox/paper-checkbox.html">
+<link rel="import" href="../../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../../bower_components/paper-listbox/paper-listbox.html">
+<link rel="import" href="../mill-item/mill-item-event.html">
+<link rel="import" href="../mill-item/mill-item-announcement.html">
+<link rel="import" href="../../../bower_components/iron-flex-layout/classes/iron-flex-layout.html">
+<link rel="import" href="../../../bower_components/iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../../../bower_components/paper-input/paper-textarea.html">
+<link rel="import" href="../../../bower_components/paper-chip/paper-chip.html">
+
+<dom-module id="mill-view-announcements">
+  <template class="layout horizontal">
+    <style>
+      :host {
+        display: block;
+        /*@apply(--layout-horizontal);*/
+        margin-left: -8px;
+        margin-right: -8px;
+      }
+
+      .column {
+        @apply(--layout-flex);
+        margin: 0 8px;
+      }
+
+      paper-card {
+        width: 100%;
+        min-height: 40px;
+      }
+
+      paper-checkbox {
+        margin-bottom: 40px;
+        padding-left: 24px;
+        padding-right: 24px;
+        display: block;
+      }
+
+      paper-card#code {
+        padding: 16px;
+        overflow-x: hidden;
+      }
+
+      #content paper-card {
+        margin-bottom: 16px;
+      }
+
+      iron-pages{
+        display: block;
+      }
+      [data-route="select"]{
+        max-width: 600px;
+        margin: 0 auto;
+      }
+      [data-route="preview"]{
+        max-width: 600px;
+        margin: 0 auto;
+      }
+      paper-button.tags{
+        background: #e0e0e0;
+      }
+      paper-button.tags[raised]{
+        background: #81c784;
+      }
+      paper-listbox paper-item:hover{
+        cursor: pointer;
+      }
+      paper-listbox paper-item:focus:before{
+        background: none;
+      }
+      paper-listbox paper-item.iron-selected{
+        background: #4caf50;
+        color: #fff;
+      }
+    </style>
+
+    <iron-pages attr-for-selected="data-route" selected="{{route}}">
+
+      <section data-route="select">
+        <div id="content">
+          <h2>Tags to include</h2>
+          <p>Any item with any of the tags selected will be included.</p>
+          <paper-listbox multi selected-items="{{_selectedItems}}">
+            <paper-item value="all church">All Church</paper-item>
+            <paper-item value="edgar">Edgar</paper-item>
+            <paper-item value="stratford">Stratford</paper-item>
+            <paper-item value="children">Children</paper-item>
+            <paper-item value="shift">Shift</paper-item>
+            <paper-item value="mens">Mens</paper-item>
+            <paper-item value="community">Community</paper-item>
+          </paper-listbox>
+          <h2>Select Content</h2>
+          <p>Select the content that should be included in the email.</p>
+          <paper-card heading="Prayers" elevation="1">
+            <template is="dom-repeat" items="{{prayers}}">
+              <paper-checkbox checked="{{item.checked}}">
+                <strong>{{_computeDate(item.publishOn)}}</strong> - {{item.title}}
+              </paper-checkbox>
+            </template>
+          </paper-card>
+          <paper-card heading="Announcements" elevation="1">
+            <template is="dom-repeat" items="{{announcements}}">
+              <paper-checkbox checked="{{item.checked}}">
+                <strong>{{_computeDate(item.publishOn)}}</strong> - {{item.title}}
+              </paper-checkbox>
+            </template>
+          </paper-card>
+          <paper-card heading="Upcoming Events" elevation="1">
+            <template id="upcomingEvents" is="dom-repeat" items="{{events}}" filter="{{_filterEvents(_selectedItems)}}">
+              <paper-checkbox checked="{{item.checked}}">
+                <strong>{{_computeDate(item.startDate)}}</strong> - {{item.title}}
+                <template is="dom-repeat" items="{{item.categories}}" as="category">
+                  <paper-chip>{{category}}</paper-chip>
+                </template>
+              </paper-checkbox>
+            </template>
+          </paper-card>
+          <paper-card heading="Events - Save The Date" elevation="1">
+            <template is="dom-repeat" items="{{events}}" filter="{{_filterSTDate(_selectedItems)}}">
+              <paper-checkbox checked="{{item.checkedSTDate}}">
+                <strong>{{_computeDate(item.startDate)}}</strong> - {{item.title}}
+                <template is="dom-repeat" items="{{item.categories}}" as="category">
+                  <paper-chip>{{category}}</paper-chip>
+                </template>
+              </paper-checkbox>
+            </template>
+          </paper-card>
+        </div>
+      </section>
+      <section data-route="preview">
+        <div class="column">
+          <h2>Preview</h2>
+          <template is="dom-repeat" items="{{prayers}}" filter="_computeFilter" observe="checked">
+            <mill-item-prayer class="export-prayer" prayer="{{item}}" id="{{item.id}}"></mill-item-prayer>
+          </template>
+          <template is="dom-repeat" items="{{announcements}}" filter="_computeFilter" observe="checked">
+            <mill-item-announcement class="export-announcement" announcement="{{item}}" id="{{item.id}}"></mill-item-announcement>
+          </template>
+          <template is="dom-repeat" items="{{events}}" filter="_computeFilter" observe="checked">
+            <mill-item-event class="export-event" event="{{item}}" id="{{item.id}}"></mill-item-event>
+          </template>
+          <template is="dom-repeat" items="{{events}}" filter="_computeFilterSTDate" observe="checked">
+            <mill-item-stdate class="export-event" event="{{item}}" id="{{item.id}}"></mill-item-stdate>
+          </template>
+        </div>
+      </section>
+      <section data-route="export">
+        <div>
+          <h2>Copy/Paste:</h2>
+          <p>
+            Select all the following text, then copy/paste it into MailChimp's HTML field in the email editor.
+          </p>
+          <paper-card id="code">
+            {{styles}}
+            &#60;div class&#61;&#34;cont&#34;&#62;
+            &#60;h3&#62;Prayers&#60;&#47;h3&#62;
+            <template is="dom-repeat" items="{{prayers}}" filter="_computeFilter" observe="checked">
+              {{_computeHTML(item)}}
+            </template>
+            &#60;p&#62;&#60;a href&#61;&#34;http&#58;&#47;&#47;themill.church&#47;pray&#34;&#62;See Past Prayers&#60;&#47;a&#62;&#60;&#47;p&#62;
+            &#60;h3&#62;Announcements&#60;&#47;h3&#62;
+            <template is="dom-repeat" items="{{announcements}}" filter="_computeFilter" observe="checked">
+              {{_computeHTML(item)}}
+            </template>
+            &#60;p&#62;&#60;a href&#61;&#34;http&#58;&#47;&#47;themill.church&#47;announcements&#34;&#62;See Past Announcements&#60;&#47;a&#62;&#60;&#47;p&#62;
+            &#60;h3&#62;Ongoing Groups&#60;&#47;h3&#62;
+            &#60;p&#62;&#60;a href&#61;&#34;http&#58;&#47;&#47;themill.church&#47;ministries&#34;&#62;See Regularly Meeting Groups&#60;&#47;a&#62;&#60;&#47;p&#62;
+            &#60;h3&#62;Upcoming Events&#60;&#47;h3&#62;
+            <template is="dom-repeat" items="{{events}}" filter="_computeFilter" observe="checked">
+              {{_computeHTML(item)}}
+            </template>
+            &#60;h3&#62;Save The Date&#60;&#47;h3&#62;
+            <template is="dom-repeat" items="{{events}}" filter="_computeFilterSTDate" observe="checked">
+              {{_computeHTML(item)}}
+            </template>
+            &#60;&#47;div&#62;
+          </paper-card>
+        </div>
+      </section>
+
+    </iron-pages>
+  </template>
+  <script>
+    (function() {
+      'use strict';
+      Polymer({
+        is: 'mill-view-announcements',
+        properties: {
+          hasPrayers: {
+            type: Boolean
+          },
+          hasEvents: {
+            type: Boolean
+          },
+          hasAnnouncements: {
+            type: Boolean
+          },
+          styles:{
+            type: String,
+            value: '<style>' +
+            'h3{margin-bottom: 20px; margin-top: 10px;} .cont{background: #fafafa; padding: 0 14px;font-family: "Arial"; max-width: 400px; margin-left: auto; margin-right: auto;}' +
+            '</style>'
+          },
+          route:{
+            type: String,
+            value: 'select'
+          }
+        },
+        _filterEvents: function(tags) {
+          var now = new Date().getTime();
+          if (!tags) {
+            return null; // for when there is not filter
+          }
+           else {
+            return function(listItem){
+              var hasCategory = false;
+              tags.forEach(function(item){
+                var tag = item.attributes.value.value.toLowerCase();
+                if (listItem.categories){
+                  listItem.categories.forEach(function(category){
+                    if (category.toLowerCase() === tag){
+                      hasCategory = true;
+                    }
+                  });
+                }
+              });
+              return hasCategory && listItem.startDate - now <= 3628800000;
+            };
+          }
+        },
+        _filterSTDate: function(tags) {
+          var now = new Date().getTime();
+          if (!tags) {
+            return null; // for when there is not filter
+          }
+           else {
+            return function(listItem){
+              var hasCategory = false;
+              tags.forEach(function(item){
+                var tag = item.attributes.value.value.toLowerCase();
+                if (listItem.categories){
+                  listItem.categories.forEach(function(category){
+                    if (category.toLowerCase() === tag){
+                      hasCategory = true;
+                    }
+                  });
+                }
+              });
+              return hasCategory && listItem.startDate - now > 3628800000;
+            };
+          }
+        },
+        _computeFilter: function(item) {
+          return item.checked === true;
+        },
+        _computeFilterSTDate: function(item) {
+          return item.checkedSTDate === true;
+        },
+        _computeHTML: function(item) {
+          return document.getElementById(item.id).innerHTML;
+        },
+        _computeDate: function(item){
+          var d = new Date(item);
+          var month = d.getMonth() + 1;
+          var day = d.getDate();
+          var year = d.getFullYear();
+          var string = month + '/' + day + '/' + year;
+          return string;
+        }
+      });
+    })();
+  </script>
+
+</dom-module>

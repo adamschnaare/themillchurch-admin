@@ -21,6 +21,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../bower_components/iron-selector/iron-selector.html">
 <link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
 <link rel="import" href="../bower_components/modo-login/modo-login.html">
+<link rel="import" href="../bower_components/ship-squarespace-slides/ship-squarespace-slides.html">
+<link rel="import" href="elements/elements.html">
 <link rel="import" href="x-user-dropdown.html">
 <link rel="import" href="x-icons.html">
 <link rel="import" href="shared-styles.html">
@@ -78,10 +80,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       <app-drawer id="drawer">
         <app-toolbar>Modo Payments</app-toolbar>
         <iron-selector selected="[[page]]" attr-for-selected="name" class="drawer-list" role="navigation">
-          <a name="list" href="/#/list">List</a>
-          <a name="detail" href="/#/detail">Detail</a>
-          <a name="settings" href="/#/settings">Settings</a>
-          <a name="logout" href="/#/logout">Logout</a>
+          <a name="announcements" href="/#/announcements">Announcements</a>
+          <a name="edgar" href="/#/edgarevents">Edgar Events</a>
+          <a name="stratford" href="/#/stratfordevents">Stratford Events</a>
         </iron-selector>
       </app-drawer>
 
@@ -90,27 +91,28 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         <app-header condenses reveals effects="waterfall">
           <app-toolbar>
             <paper-icon-button icon="menu" drawer-toggle></paper-icon-button>
-            <div main-title>{{_title}}</div>
+            <div main-title>The Mill Admin</div>
+            <!-- <div main-title>{{_title}}</div> -->
             <x-user-dropdown
               profile="[[_profile]]"
               on-logout="_logout"
               on-navigate="_navigate"></x-user-dropdown>
           </app-toolbar>
         </app-header>
+        <mill-data events="{{events}}" prayers="{{prayers}}" announcements="{{announcements}}"></mill-data>
         <iron-pages selected="[[page]]" attr-for-selected="name" fallback-selection="view404" role="main">
-          <x-list name="list"></x-list>
-          <x-detail name="detail"></x-detail>
-          <x-settings name="settings" profile="[[_profile]]"></x-settings>
+          <mill-view-announcements
+            name="announcements"
+            events="{{events.upcoming}}"
+            prayers="{{prayers.items}}"
+            announcements="{{announcements.items}}"
+            route="{{headerRoute}}"></mill-view-announcements>
+          <ship-squarespace-slides name="edgar" categories="All Church,Edgar"></ship-squarespace-slides>
+          <ship-squarespace-slides name="stratford" categories="All Church,Edgar"></ship-squarespace-slides>
           <x-view404 name="view404"></x-view404>
         </iron-pages>
       </app-header-layout>
     </app-drawer-layout>
-    <!-- <modo-login id="login"
-      auto
-      client-id="cF9feG7LynWDT7bnCseVc1mfRbtm9Zqs",
-      domain="modo.auth0.com"
-      id-token="{{_token}}"
-      profile="{{_profile}}"></modo-login> -->
   </template>
 
   <script>
@@ -152,9 +154,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         }
       },
       _pageChanged: function(page) {
-        // Load page import on demand. Show 404 page if fails
-        var resolvedPageUrl = this.resolveUrl('x-' + page + '.html');
-        this.importHref(resolvedPageUrl, null, this._showPage404, true);
+        // if (page === 'edgar' || page === 'stratford'){
+        //
+        // } else{}
+        // // Load page import on demand. Show 404 page if fails
+        // var resolvedPageUrl = this.resolveUrl('x-' + page + '.html');
+        // this.importHref(resolvedPageUrl, null, this._showPage404, true);
         this.$.drawer.close();
       },
       _showPage404: function() {

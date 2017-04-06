@@ -1,0 +1,30 @@
+<dom-module id="mill-item-announcement">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+    </style>
+    <p style="padding: 14px;background: #fff;border: 1px solid #eee;border-bottom: 2px solid #ddd;">
+      <a href="http://themill.church{{announcement.fullUrl}}" target="_blank">{{announcement.title}}</a><br />
+      {{_computeExcerpt(announcement.excerpt)}}
+    </p>
+  </template>
+  <script>
+    Polymer({
+      is: 'mill-item-announcement',
+      properties: {
+        announcement: {
+          type: Object,
+        }
+      },
+      _computeExcerpt: function(html) {
+        var div = document.createElement('div');
+        div.innerHTML = html;
+        var text = div.textContent || div.innerText || '';
+        return text;
+      }
+    });
+  </script>
+
+</dom-module>

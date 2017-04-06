@@ -1,0 +1,90 @@
+<!--
+@license
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+
+<!-- This is meant to be comsumed by an email client eventually, so annoyingly we must inline all styles and structure everything in tables. Ugh. Thanks, 1990. -->
+
+<link rel="import" href="../../../bower_components/polymer/polymer.html">
+
+<dom-module id="mill-item-event">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+    </style>
+
+    <!-- Img -->
+    <div style="background: #fff; padding: 14px;border: 1px solid #eee; border-bottom: 2px solid #ddd; margin-bottom: 20px;">
+      <a href="http://themill.church{{event.fullUrl}}" target="_blank" style="width:100%;"><img src="{{event.assetUrl}}?format=500w" style="width: 100%"/></a>
+      <h2 style="margin: 0; padding: 14px 0;">{{event.title}}</h2>
+      <table>
+        <tr>
+          <td style="width: 1%;" valign="top">
+            <div class="time" style="display: inline-block; background: #fff; width: 50px; text-align: center; padding: 6px 10px; border: 1px solid #e8e8e8;">
+              <div class="month" style="padding: 8px 0px 2px 0px; font-size: 14px; text-transform: uppercase;">{{_computeDateMonth(event.startDate)}}</div>
+              <div class="day" style="font-size: 26px; padding: 3px 0px;">{{_computeDateDay(event.startDate)}}</div>
+              <div class="hours" style="border-top: 1px solid #ddd; padding-top: 6px; font-size: 14px; text-transform: uppercase;">{{_computeDateHours(event.startDate)}}</div>
+            </div>
+          </td>
+          <td valign="top" style="padding: 0 20px;">
+            <p>{{_computeExcerpt(event.excerpt)}}</p>
+            <a href="http://themill.church{{event.fullUrl}}" target="_blank" style="background: #728417; color: #fff; padding: 10px 16px; border-radius: 6px; display: inline-block; text-decoration: none;">Read More</a>
+          </td>
+        </tr>
+      </table>
+    </div>
+
+
+  </template>
+  <script>
+    (function() {
+      'use strict';
+      Polymer({
+        is: 'mill-item-event',
+        properties: {
+          event: {
+            type: Object
+          }
+        },
+        _computeExcerpt: function(html) {
+          var div = document.createElement('div');
+          div.innerHTML = html;
+          var text = div.textContent || div.innerText || '';
+          return text;
+        },
+        _computeDateMonth: function(item) {
+          var date = new Date(item);
+          var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+          return months[date.getMonth()];
+        },
+        _computeDateDay: function(item) {
+          var date = new Date(item);
+          return date.getDate();
+        },
+        _computeDateHours: function(item) {
+          var d = new Date(item);
+          var minutes = d.getMinutes().toString().length === 1 ? '0' + d.getMinutes() : d.getMinutes();
+          var hours = d.getHours().toString().length === 1 ? '0' + d.getHours() : d.getHours();
+          var ampm = d.getHours() >= 12 ? 'p' : 'a';
+          if (hours > 12) {
+            hours = hours - 12;
+          }
+          if (typeof hours === 'string') {
+            while (hours.charAt(0) === '0') {
+              hours = hours.substr(1);
+            }
+          }
+          return hours + ':' + minutes + ampm;
+        }
+      });
+    })();
+  </script>
+
+</dom-module>

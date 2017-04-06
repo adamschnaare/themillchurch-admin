@@ -2,7 +2,7 @@
   "entrypoint": "index.html",
   "shell": "src/x-app.html",
   "fragments": [
-    "src/x-list.html",
+    "src/elements/-list.html",
     "src/x-detail.html",
     "src/x-settings.html",
     "src/x-view404.html"
