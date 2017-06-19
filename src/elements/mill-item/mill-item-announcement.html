@@ -5,10 +5,22 @@
         display: block;
       }
     </style>
-    <p style="padding: 14px;background: #fff;border: 1px solid #eee;border-bottom: 2px solid #ddd;">
+    <!-- <p style="padding: 14px;background: #fff;border: 1px solid #eee;border-bottom: 2px solid #ddd;">
       <a href="http://themill.church{{announcement.fullUrl}}" target="_blank">{{announcement.title}}</a><br />
       {{_computeExcerpt(announcement.excerpt)}}
-    </p>
+    </p> -->
+    <div style="background: #fff; padding: 14px;border: 1px solid #eee; border-bottom: 2px solid #ddd; margin-bottom: 20px;">
+      <a href="http://themill.church{{announcement.fullUrl}}" target="_blank" style="width:100%;"><img src="{{announcement.assetUrl}}?format=500w" style="width: 100%"/></a>
+      <h2 style="margin: 0; padding: 14px 0;">{{announcement.title}}</h2>
+      <table>
+        <tr>
+          <td valign="top" style="padding: 0 20px;">
+            <p>{{_computeExcerpt(announcement.excerpt)}}</p>
+            <a href="http://themill.church{{announcement.fullUrl}}" target="_blank" style="background: #728417; color: #fff; padding: 10px 16px; border-radius: 6px; display: inline-block; text-decoration: none;">Read More</a>
+          </td>
+        </tr>
+      </table>
+    </div>
   </template>
   <script>
     Polymer({
@@ -16,7 +28,11 @@
       properties: {
         announcement: {
           type: Object,
+          observer: 'test'
         }
+      },
+      test: function(){
+        console.log('this.announcement',this.announcement);
       },
       _computeExcerpt: function(html) {
         var div = document.createElement('div');

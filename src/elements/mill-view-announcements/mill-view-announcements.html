@@ -26,8 +26,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       :host {
         display: block;
         /*@apply(--layout-horizontal);*/
-        margin-left: -8px;
-        margin-right: -8px;
+        /*margin-left: -8px;
+        margin-right: -8px;*/
+        padding: 0 20px;
       }
 
       .column {
@@ -83,8 +84,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         background: #4caf50;
         color: #fff;
       }
+      .info{
+        padding: 10px 20px;
+        border: 1px solid #4caf50;
+        background: #e8f5e9;
+        color: #1b5e20;
+      }
     </style>
-
+    [[route.path]]
     <iron-pages attr-for-selected="data-route" selected="{{route}}">
 
       <section data-route="select">
@@ -158,7 +165,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       <section data-route="export">
         <div>
           <h2>Copy/Paste:</h2>
-          <p>
+          <p class="info">
             Select all the following text, then copy/paste it into MailChimp's HTML field in the email editor.
           </p>
           <paper-card id="code">
@@ -215,7 +222,17 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           route:{
             type: String,
             value: 'select'
-          }
+          },
+          events: {
+            type: Array
+          },
+          announcements: {
+            type: Array,
+            observer: 'test'
+          },
+        },
+        test: function(){
+          console.log('this.announcements',this.announcements);
         },
         _filterEvents: function(tags) {
           var now = new Date().getTime();
@@ -268,6 +285,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           return item.checkedSTDate === true;
         },
         _computeHTML: function(item) {
+          console.log('item',item);
           return document.getElementById(item.id).innerHTML;
         },
         _computeDate: function(item){
