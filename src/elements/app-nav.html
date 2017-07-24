@@ -19,9 +19,9 @@
       }
     </style>
     <ul class="top-menu layout horizontal">
-      <li on-tap="_routeChange" route="select">Select</li>
-      <li on-tap="_routeChange" route="preview">Preview</li>
-      <li on-tap="_routeChange" route="export">Export</li>
+      <li id="one" on-click="_routeChange" route="select">Select</li>
+      <li id="two" on-click="_routeChange" route="preview">Preview</li>
+      <li id="three" on-click="_routeChange" route="export">Export</li>
     </ul>
   </template>
   <script>
@@ -35,10 +35,9 @@
       },
       _routeChange: function(e){
         this.route = e.target.attributes.route.value;
-        var items = this.getElementsByTagName('li');
-        for (var i = 0; i < items.length; i++) {
-          items[i].removeAttribute('selected');
-        }
+        this.$.one.removeAttribute('selected');
+        this.$.two.removeAttribute('selected');
+        this.$.three.removeAttribute('selected');
         e.target.setAttribute('selected',true);
       }
     });

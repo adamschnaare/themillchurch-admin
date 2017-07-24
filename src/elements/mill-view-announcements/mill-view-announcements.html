@@ -91,7 +91,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         color: #1b5e20;
       }
     </style>
-    [[route.path]]
     <iron-pages attr-for-selected="data-route" selected="{{route}}">
 
       <section data-route="select">
@@ -123,6 +122,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
               </paper-checkbox>
             </template>
           </paper-card>
+          <template is="dom-repeat" id="events" items="{{events}}" filter="_computeFilter" observe="checked">
+            <mill-item-event class="export-event" event="{{item}}" id="{{item.id}}"></mill-item-event>
+          </template>
+          <button on-click="getExport">Get Export</button>
           <paper-card heading="Upcoming Events" elevation="1">
             <template id="upcomingEvents" is="dom-repeat" items="{{events}}" filter="{{_filterEvents(_selectedItems)}}">
               <paper-checkbox checked="{{item.checked}}">
@@ -148,7 +151,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       <section data-route="preview">
         <div class="column">
           <h2>Preview</h2>
-          <template is="dom-repeat" items="{{prayers}}" filter="_computeFilter" observe="checked">
+          <!-- <template is="dom-repeat" items="{{prayers}}" filter="_computeFilter" observe="checked">
             <mill-item-prayer class="export-prayer" prayer="{{item}}" id="{{item.id}}"></mill-item-prayer>
           </template>
           <template is="dom-repeat" items="{{announcements}}" filter="_computeFilter" observe="checked">
@@ -159,7 +162,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           </template>
           <template is="dom-repeat" items="{{events}}" filter="_computeFilterSTDate" observe="checked">
             <mill-item-stdate class="export-event" event="{{item}}" id="{{item.id}}"></mill-item-stdate>
-          </template>
+          </template> -->
         </div>
       </section>
       <section data-route="export">
@@ -227,14 +230,19 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             type: Array
           },
           announcements: {
+            type: Array
+          },
+          _selectedItems: {
             type: Array,
             observer: 'test'
           },
         },
-        test: function(){
-          console.log('this.announcements',this.announcements);
+        getExport: function(){
+          var items = this.getElementsByClassName('iron-selected');
+          console.log('getExport ran',this,items);
         },
         _filterEvents: function(tags) {
+          console.log('_filterEvents');
           var now = new Date().getTime();
           if (!tags) {
             return null; // for when there is not filter
@@ -257,6 +265,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           }
         },
         _filterSTDate: function(tags) {
+          console.log('_filterSTDate');
           var now = new Date().getTime();
           if (!tags) {
             return null; // for when there is not filter
@@ -279,16 +288,20 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           }
         },
         _computeFilter: function(item) {
+          console.log('_computeFilter');
           return item.checked === true;
         },
         _computeFilterSTDate: function(item) {
+          console.log('_computeFilterSTDate');
           return item.checkedSTDate === true;
         },
         _computeHTML: function(item) {
-          console.log('item',item);
-          return document.getElementById(item.id).innerHTML;
+          console.log('_computeHTML');
+          console.log('item',item.id);
+          // return document.getElementById(item.id).innerHTML;
         },
         _computeDate: function(item){
+          console.log('_computeDate');
           var d = new Date(item);
           var month = d.getMonth() + 1;
           var day = d.getDate();

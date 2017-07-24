@@ -127,14 +127,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         },
         _title: {
           type: String,
-          value: 'Modo Payments'
-        },
+          value: 'The Mill Church'
+        }
       },
       observers: [
         '_routePageChanged(routeData.page)'
       ],
       _routePageChanged: function(page) {
-        this.page = page || 'list';
+        this.page = page || 'announcements';
         switch(this.page){
           case 'list':
             this._title = 'List';

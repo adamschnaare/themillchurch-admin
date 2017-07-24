@@ -49,8 +49,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       properties: {
         events: {
           type: Object,
-          notify: true,
-          observer: 'test'
+          notify: true
         },
         prayers: {
           type: Object,
@@ -61,12 +60,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           notify: true
         }
       },
-      ready: function(){
-        console.log('ready ran');
-      },
-      test:function(){
-        console.log('events:',this.events);
-      }
     });
   })();
   </script>
